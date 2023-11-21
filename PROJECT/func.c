@@ -3,11 +3,9 @@
 #include <stdlib.h>
 #include <signal.h>
 
-static wait = 1;
-
 double f(double x)
 {
-    return x + x - 16;
+    return x * x - 16;
 }
 
 void find_zero(double *pa, double *pb, double eps, double *px)
@@ -22,15 +20,8 @@ void find_zero(double *pa, double *pb, double eps, double *px)
 
 void ctrlc_handler(int signum)
 {
-
     printf("\nПолучен сигнал Ctrl+C\n");
     printf("Продолжить поиск корня? (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): ");
-    while (getchar() != '\n')
-    {
-        printf("listener: stop");
-        wait = 0;
-        _getch();
-    }
 }
 // void choose_path(char *choice);
 // void new_row(double *pa, double *pb);
