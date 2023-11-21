@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "head.h": "c",
+    "unistd.h": "c"
+  }
+}

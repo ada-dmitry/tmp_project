@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <math.h>
 #include <signal.h>
 #include <unistd.h>
-#include <pthread.h>
+#include <math.h>
 
 double f(double x)
 {
@@ -19,20 +18,19 @@ void find_zero(double *pa, double *pb, double eps, double *px)
     printf("Текущее приближение: %lf\n", *px);
 }
 
-void ctrlc_handler(int signum)
+void ctrlc_handler(int signum, char *ch)
 {
-    int sig;
-    sigset_t *set = (sigset_t *)signum;
-
-    while (1)
-    {
-        sigwait(set, &sig);
-        if (sig == SIGINT)
-        {
-            printf("\nПолучен сигнал Ctrl+C\n");
-            printf("Продолжить поиск корня? (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): ");
-        }
-    }
+    printf("\nПолучен сигнал Ctrl+C\n");
+    printf("\nПродолжить поиск корня? (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): \n");
 }
-// void choose_path(char *choice);
+
+// void choose_path()
+// {
+//     char choice = getchar();
+//     if(choice == 'A')
+//         break;
+//     else if(choice == 'C')
+//         find_zero()
+
+// }
 // void new_row(double *pa, double *pb);
