@@ -16,11 +16,12 @@ char choice, *ch = &choice;
 int main()
 {
     double tmp;
-    struct sigaction sa;
-    sa.sa_handler = ctrlc_handler;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-
+    /*
+        struct sigaction sa;
+        sa.sa_handler = ctrlc_handler;
+        sa.sa_flags = 0;
+        sigemptyset(&sa.sa_mask);
+    */
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
 
@@ -56,15 +57,15 @@ int main()
     }
 
     find_zero();
-
-    if (sigaction(SIGINT, &sa, NULL) == -1)
-    {
-        perror("sigaction");
-        return 1;
-    }
-
+    /*
+        if (sigaction(SIGINT, &sa, NULL) == -1)
+        {
+            perror("sigaction");
+            return 1;
+        }
+    */
     printf("Ожидание сигнала Ctrl+C...\n");
-    // signal(SIGINT, ctrlc_handler);
+    signal(SIGINT, ctrlc_handler);
     while (1)
     {
         sleep(1);
@@ -88,7 +89,7 @@ void find_zero()
         *pa = x;
     printf("Текущее приближение: %lf\n", x);
 
-    if (fabs(b - a) < eps)
+    if (fabs(*pb - *pa) < eps)
     {
         printf("\nКорень уравнения: %lf\n", x);
         printf("Работа программы завершена.\n");

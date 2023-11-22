@@ -5,7 +5,7 @@
 #include <math.h>
 
 double f(double x);
-void find_zero();
+void find_zero_x();
 void ctrlc_handler(int signum);
 void choose_path();
 // int cnt_root();
@@ -16,10 +16,12 @@ char choice, *ch = &choice;
 int main()
 {
     double tmp;
+    /*
     struct sigaction sa;
     sa.sa_handler = ctrlc_handler;
     sa.sa_flags = 0;
     sigemptyset(&sa.sa_mask);
+    */
 
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
@@ -55,16 +57,16 @@ int main()
         }
     }
 
-    find_zero();
-
+    find_zero_x();
+    /*
     if (sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");
         return 1;
     }
-
+    */
     printf("Ожидание сигнала Ctrl+C...\n");
-    // signal(SIGINT, ctrlc_handler);
+    signal(SIGINT, ctrlc_handler);
     while (1)
     {
         sleep(1);
@@ -75,7 +77,7 @@ int main()
 
 double f(double x) // Функция обязана быть линейной
 {
-    return x + x - 16;
+    return x * x - 16;
 }
 
 void find_zero()
@@ -121,14 +123,14 @@ void choose_path()
 
     else if (*ch == 'C')
     {
-        find_zero();
+        find_zero_x();
         printf("Ожидание сигнала Ctrl+C...\n");
     }
     else if (*ch == 'R')
     {
         printf("Введите новые значения границ a и b: ");
         scanf("%lf %lf", pa, pb);
-        find_zero();
+        find_zero_x();
         printf("Ожидание сигнала Ctrl+C...\n");
     }
     else
@@ -146,7 +148,7 @@ void choose_path()
         switch (*ch)
         {
         case 'C':
-            find_zero();
+            find_zero_x();
             printf("Ожидание сигнала Ctrl+C...\n");
             return;
         case 'A':
@@ -173,7 +175,7 @@ void choose_path()
                     printf("Нажмите Ctrl+C и поменяйте границы\n");
                 }
             }
-            find_zero();
+            find_zero_x();
             printf("Ожидание сигнала Ctrl+C...\n");
             return;
         }
@@ -198,3 +200,32 @@ int cnt_root()
     }
 }
 */
+
+void find_zero_x()
+{
+    float mid = (*pa + *pb) / 2;
+    mid = (*pb + *pa) / 2;
+    if (f(mid) > 0)
+    {
+        *pa = (f(*pa) > f(*pb)) ? mid : *pa;
+        *pb = (f(*pa) < f(*pb)) ? mid : *pb;
+    }
+    else
+    {
+        *pa = (f(*pa) < f(*pb)) ? mid : *pa;
+        *pb = (f(*pa) > f(*pb)) ? mid : *pb;
+    }
+
+    printf("Текущее приближение: %lf\n", *pa);
+
+    if (fabs(f(mid)) < eps)
+    {
+        printf("\nКорень уравнения: %lf\n", *pa);
+        printf("Работа программы завершена.\n");
+        exit(0);
+    }
+    else
+    {
+        return;
+    }
+}
