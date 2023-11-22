@@ -1,14 +1,11 @@
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <math.h>
+#include "declare.h"
 
 double f(double x)
 {
     return x * x - 16;
 }
 
-void find_zero(double *pa, double *pb, double eps, double *px)
+void find_zero()
 {
     *px = (*pa + *pb) / 2; // метод деления отрезка пополам
     if (f(*pa) * f(*px) < 0)
