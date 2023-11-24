@@ -11,17 +11,12 @@ void choose_path();
 // int cnt_root();
 
 double a, b, eps, x, *pa = &a, *pb = &b;
-char choice, *ch = &choice;
+// char choice, *ch = &choice;
 
 int main()
 {
     double tmp;
-    /*
-        struct sigaction sa;
-        sa.sa_handler = ctrlc_handler;
-        sa.sa_flags = 0;
-        sigemptyset(&sa.sa_mask);
-    */
+
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
 
@@ -57,13 +52,6 @@ int main()
     }
 
     find_zero();
-    /*
-        if (sigaction(SIGINT, &sa, NULL) == -1)
-        {
-            perror("sigaction");
-            return 1;
-        }
-    */
     printf("Ожидание сигнала Ctrl+C...\n");
     signal(SIGINT, ctrlc_handler);
     while (1)
@@ -80,15 +68,14 @@ double f(double x) // Функция обязана быть линейной
 }
 
 void find_zero()
-{
-    double x;
+{    
+    double x; 
     x = (*pa + *pb) / 2; // метод деления отрезка пополам
     if (f(*pa) * f(x) < 0)
         *pb = x;
     else
         *pa = x;
-    printf("Текущее приближение: %lf\n", x);
-
+        printf("Текущее приближение: %lf\n", x);
     if (fabs(*pb - *pa) < eps)
     {
         printf("\nКорень уравнения: %lf\n", x);
@@ -104,50 +91,22 @@ void find_zero()
 void ctrlc_handler(int signum)
 {
     printf("\nПолучен сигнал Ctrl+C\n");
+    find_zero();
     choose_path();
 }
 
 void choose_path()
 {
-    /*
-    printf("\nПродолжить поиск корня? (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): \n");
-    choice = 'Q';
-    *ch = getchar();
-
-    if (*ch == 'A')
-    {
-        printf("Работа программы завершена.\n");
-        exit(0);
-    }
-
-    else if (*ch == 'C')
-    {
-        find_zero();
-        printf("Ожидание сигнала Ctrl+C...\n");
-    }
-    else if (*ch == 'R')
-    {
-        printf("Введите новые значения границ a и b: ");
-        scanf("%lf %lf", pa, pb);
-        find_zero();
-        printf("Ожидание сигнала Ctrl+C...\n");
-    }
-    else
-    {
-        printf("Ошибка ввода, повторная попытка...");
-        choose_path();
-    }
-    */
+    char choice, *ch = &choice;
     printf("\nПродолжить поиск корня?\
         (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): \n");
     do
     {
-
         *ch = getchar();
         switch (*ch)
         {
         case 'C':
-            find_zero();
+            // find_zero();
             printf("Ожидание сигнала Ctrl+C...\n");
             return;
         case 'A':
@@ -182,20 +141,4 @@ void choose_path()
     printf("Ошибка ввода, повторная попытка...");
     choose_path();
 }
-/*
-int cnt_root()
-{
-    if (fabs(*pb - *pa) < eps)
-        return (f(*pa) * f(*pb) <= 0) ? 1 : 0;
-    else
-    {
-        double m = (*pa + *pb) / 2;
-        if(f(*pa)*f(m)<=0)
-        {
-            return cnt_root(*pa, m);
-        } else {
-            return cnt_root(m, *pb);
-        }
-    }
-}
-*/
+
