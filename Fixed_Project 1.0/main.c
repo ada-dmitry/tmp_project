@@ -5,7 +5,7 @@
 #include <math.h>
 
 double a, b, eps, x, *pa = &a, *pb = &b;
-char ch, *pch = &ch;
+char choice, *ch = &choice;
 
 double f(double x);
 void find_zero();
@@ -19,6 +19,7 @@ double f(double x) // Функция обязана быть линейной
 
 void choose_path()
 {
+
     printf("\nПродолжить поиск корня?\
         (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): \n");
     do
@@ -27,8 +28,6 @@ void choose_path()
         switch (*ch)
         {
         case 'C':
-            // find_zero();
-            //printf("Ожидание сигнала Ctrl+C...\n");
             return;
         case 'A':
             printf("Работа программы завершена.\n");
@@ -98,8 +97,6 @@ void find_zero()
     printf("Работа программы завершена.\n");
     exit(0);
 }
-
-
 
 int main(){
     double tmp;
