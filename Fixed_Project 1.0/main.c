@@ -4,17 +4,15 @@
 #include <unistd.h>
 #include <math.h>
 
-double a, b, eps, x, *pa = &a, *pb = &b;
-char choice, *ch = &choice;
+double a, b, eps, x, *pa = &a, *pb = &b, *px = &x;
 
 double f(double x);
-void find_zero();
 void ctrlc_handler(int signum);
 void choose_path();
 
 double f(double x) // Функция обязана быть линейной
 {
-    return x + 4;
+    return exp(x)-1;
 }
 
 void choose_path()
@@ -30,6 +28,7 @@ void choose_path()
         case 'C':
             return;
         case 'A':
+            printf("\nКорень уравнения: %lf\n", *px);
             printf("Работа программы завершена.\n");
             exit(0);
         case 'R':
@@ -53,8 +52,6 @@ void choose_path()
                     printf("Нажмите Ctrl+C и поменяйте границы\n");
                 }
             }
-            find_zero();
-            printf("Ожидание сигнала Ctrl+C...\n");
             return;
         }
     } while (*ch != 'A' || *ch != 'R' || *ch != 'C');
@@ -64,42 +61,14 @@ void choose_path()
 
 void ctrlc_handler(int signum)
 {
-    printf("\nПолучен сигнал Ctrl+C\n");
+    printf("\nТекущее приближение: %lf\n", *px);
     choose_path();
-    find_zero();
-}
-
-void find_zero()
-{
-    double x;
-    x = (*pa + *pb) / 2; // метод деления отрезка пополам
-    while(fabs(*pb - *pa) > eps || f(x) != 0){
-        printf("%lf %lf", *pa, *pb);
-        sleep(2);
-
-        if (f(*pa) * f(x) < 0)
-            *pb = x;
-        else if(f(*pb) * f(x) < 0)
-            *pb = x;
-
-        printf("Текущее приближение: %lf\n", x);
-        
-        if(f(x) <= eps)
-        {
-            printf("\nКорень уравнения: %lf\n", x);
-            printf("Работа программы завершена.\n");
-            exit(0);
-        }
-
-        x = (*pa + *pb) / 2; // метод деления отрезка пополам
-    }
-    printf("\nКорень уравнения: %lf\n", x);
-    printf("Работа программы завершена.\n");
-    exit(0);
 }
 
 int main(){
     double tmp;
+    signal(SIGINT, ctrlc_handler);    
+
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
     
@@ -136,10 +105,23 @@ int main(){
         }
     }
 
-    find_zero();
+    do
+    {
+        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+        printf("%lf %lf\n", *pa, *pb);
+        sleep(1);
 
-    printf("Ожидание сигнала Ctrl+C...\n");
-    signal(SIGINT, ctrlc_handler);
-    while(1);
+        if (f(*pa) * f(x) <= 0)
+            *pb = x;
+        else if(f(*pb) * f(x) <= 0)
+            *pa = x;
+
+        
+
+    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+
+    printf("\nКорень уравнения: %lf\n", *px);
+    printf("Работа программы завершена.\n");
+
     return 0;
 }

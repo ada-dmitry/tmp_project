@@ -8,7 +8,7 @@ double a, b, eps, x, *pa = &a, *pb = &b, *px = &x;
 char choice, *ch = &choice;
 
 double f(double x);
-void find_zero();
+// void find_zero();
 void ctrlc_handler(int signum);
 void choose_path();
 
@@ -30,6 +30,7 @@ void choose_path()
         case 'C':
             return;
         case 'A':
+            printf("\nКорень уравнения: %lf\n", *px);
             printf("Работа программы завершена.\n");
             exit(0);
         case 'R':
@@ -53,8 +54,8 @@ void choose_path()
                     printf("Нажмите Ctrl+C и поменяйте границы\n");
                 }
             }
-            find_zero();
-            printf("Ожидание сигнала Ctrl+C...\n");
+            // // find_zero();
+            // printf("Ожидание сигнала Ctrl+C...\n");
             return;
         }
     } while (*ch != 'A' || *ch != 'R' || *ch != 'C');
@@ -64,40 +65,41 @@ void choose_path()
 
 void ctrlc_handler(int signum)
 {
-    printf("\nПолучен сигнал Ctrl+C\n");
+    // printf("\nПолучен сигнал Ctrl+C\n");
+    printf("\nТекущее приближение: %lf\n", *px);
     choose_path();
-    find_zero();
+    // find_zero();
 }
 
-void find_zero()
-{
-    signal(SIGINT, ctrlc_handler);    
-    do
-    {
-        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
-        printf("%lf %lf\n", *pa, *pb);
-        sleep(10);
+// void find_zero()
+// {
+//     //signal(SIGINT, ctrlc_handler);    
+//     do
+//     {
+//         *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+//         printf("%lf %lf\n", *pa, *pb);
+//         sleep(10);
 
-        if (f(*pa) * f(x) < 0)
-            *pb = x;
-        else if(f(*pb) * f(x) < 0)
-            *pa = x;
+//         if (f(*pa) * f(x) < 0)
+//             *pb = x;
+//         else if(f(*pb) * f(x) < 0)
+//             *pa = x;
 
-        printf("Текущее приближение: %lf\n", *px);
+//         printf("Текущее приближение: %lf\n", *px);
 
-    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+//     } while(fabs(*pb - *pa) > eps && f(x) != 0);
 
-    printf("\nКорень уравнения: %lf\n", *px);
-    printf("Работа программы завершена.\n");
-    return;
-}
+//     printf("\nКорень уравнения: %lf\n", *px);
+//     printf("Работа программы завершена.\n");
+//     return;
+// }
 
 int main(){
     double tmp;
 
     struct sigaction sa;
     sa.sa_handler = ctrlc_handler;
-    sa.sa_flags = SA_RESTART;
+    sa.sa_flags = SA_RESETHAND;
     sigemptyset(&sa.sa_mask);
 
     printf("Введите интервал [a, b] и точность eps: ");
@@ -136,19 +138,36 @@ int main(){
         }
     }
 
-    find_zero();
+    signal(SIGINT, ctrlc_handler);    
+    do
+    {
+        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+        printf("%lf %lf\n", *pa, *pb);
+        sleep(1);
+
+        if (f(*pa) * f(x) < 0)
+            *pb = x;
+        else if(f(*pb) * f(x) < 0)
+            *pa = x;
+
+        
+
+    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+
+    printf("\nКорень уравнения: %lf\n", *px);
+    printf("Работа программы завершена.\n");
 
     if (sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");
         return 1;
-    }
+    }   
 
-    printf("Ожидание сигнала Ctrl+C...\n");
+    // printf("Ожидание сигнала Ctrl+C...\n");
     // signal(SIGINT, ctrlc_handler);
-    while(1) 
-        {
-            sleep(1);
-            }
+    // while(1) 
+    //     {
+    //         sleep(1);
+    //         }
     return 0;
 }
