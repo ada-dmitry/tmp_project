@@ -10,7 +10,7 @@ double f(double x);
 void ctrlc_handler(int signum);
 void choose_path();
 
-double f(double x) // Функция обязана быть линейной
+double f(double x) 
 {
     return exp(x)-1;
 }
