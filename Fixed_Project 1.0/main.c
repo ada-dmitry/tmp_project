@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <math.h>
+#include <termios.h>
 
 double a, b, eps, x, *pa = &a, *pb = &b, *px = &x;
 
@@ -12,28 +13,33 @@ void choose_path();
 
 double f(double x) 
 {
-    return exp(x)-1;
+    return x - 1;
 }
 
 void choose_path()
 {
-
-    printf("\nПродолжить поиск корня?\
-        (C - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке): \n");
+    char choice, *ch = &choice;
+    printf("\nПродолжить поиск корня?\n");
+        
     do
     {
+        printf("\nC - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке: \n");
+        *ch = getchar();
         *ch = getchar();
         switch (*ch)
         {
         case 'C':
+        case 'c':
             return;
         case 'A':
+        case 'a':
             printf("\nКорень уравнения: %lf\n", *px);
             printf("Работа программы завершена.\n");
             exit(0);
         case 'R':
+        case 'r':
             printf("Введите новые значения границ a и b: ");
-            scanf("%lf %lf", pa, pb);
+            scanf("%lf%lf", pa, pb);
             if (f(*pa) * f(*pb) > 0)
             {
                 printf("В указанных границах нуля функции не существует.\n");
@@ -53,24 +59,54 @@ void choose_path()
                 }
             }
             return;
+
+        default:
+            printf("Ошибка ввода, повторная попытка...");
         }
-    } while (*ch != 'A' || *ch != 'R' || *ch != 'C');
-    printf("Ошибка ввода, повторная попытка...");
-    choose_path();
+    } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c'); 
 }
 
 void ctrlc_handler(int signum)
 {
+    struct termios term;
+    
+    // Получение текущих настроек терминала
+    tcgetattr(0, &term);
+    
+    // Отключение символа ECHO
+    term.c_lflag &= ~ECHO;
+    
+    // Применение новых настроек терминала
+    tcsetattr(0, TCSANOW, &term);
+
     printf("\nТекущее приближение: %lf\n", *px);
     choose_path();
+
+    // Включение символа ECHO
+    term.c_lflag |= ECHO;
+    
+    // Применение новых настроек терминала
+    tcsetattr(0, TCSANOW, &term);
 }
 
 int main(){
+
     double tmp;
-    signal(SIGINT, ctrlc_handler);    
+    
+
+    struct sigaction sa;
+    sa.sa_handler = ctrlc_handler;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);  
 
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
+
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        return 1;
+    }   
     
     if (*pa > *pb) // Если пользователь перепутал границы
     {
@@ -119,6 +155,7 @@ int main(){
         
 
     } while(fabs(*pb - *pa) > eps && f(x) != 0);
+
 
     printf("\nКорень уравнения: %lf\n", *px);
     printf("Работа программы завершена.\n");
