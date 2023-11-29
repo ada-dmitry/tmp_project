@@ -118,7 +118,6 @@ int main(){
 
     double tmp;
     
-
     struct sigaction sa;
     sa.sa_handler = ctrlc_handler;
     sa.sa_flags = 0;
@@ -167,17 +166,6 @@ int main(){
     }
 
     fork_method();
-
-    // do
-    // {
-    //     *px = (*pa + *pb) / 2; // метод деления отрезка пополам
-    //     printf("%lf %lf\n", *pa, *pb);
-    //     if (f(*pa) * f(x) <= 0)
-    //         *pb = x;
-    //     else if(f(*pb) * f(x) <= 0)
-    //         *pa = x;
-    //     sleep(1);
-    // } while(fabs(*pb - *pa) > eps && f(x) != 0);
 
     printf("\nКорень уравнения: %lf\n", *px);
     printf("Работа программы завершена.\n");
