@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <math.h>
 #include <termios.h>
+#include <stdio_ext.h>
+
 
 #include "declare.h"
 
@@ -19,12 +21,15 @@ void fork_method()
     do
     {
         *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+
         printf("%lf %lf\n", *pa, *pb);
         if (f(*pa) * f(x) <= 0)
             *pb = x;
         else if(f(*pb) * f(x) <= 0)
             *pa = x;
+            
         sleep(1);
+
     } while(fabs(*pb - *pa) > eps && f(x) != 0);
     return;
 }
@@ -39,17 +44,16 @@ void choose_path()
     tcgetattr(0, &term);
     
     // Отключение символа ECHO
-    term.c_lflag &= ~ECHO;
+    //term.c_lflag &= ~ECHO;
     
     // Применение новых настроек терминала
-    tcsetattr(0, TCSANOW, &term);
+    //tcsetattr(0, TCSANOW, &term);
 
     printf("\nПродолжить поиск корня?\n");
-    
+    __fpurge(stdin);
     do
     {
         printf("\nC - продолжить, A - закончить работу программы, R - начать поиск на другом отрезке: \n");
-        *ch = getchar();
         *ch = getchar();
         switch (*ch)
         {
@@ -95,6 +99,7 @@ void choose_path()
 
         default:
             printf("Ошибка ввода, повторная попытка...");
+            
         }
     } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c'); 
 

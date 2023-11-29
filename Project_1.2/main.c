@@ -15,15 +15,15 @@ int main(){
     double tmp;
     pa = &a; pb = &b; px = &x;
     
-    struct sigaction sa;
-    sa.sa_handler = ctrlc_handler;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);  
+    struct sigaction sig;
+    sig.sa_handler = ctrlc_handler;
+    sig.sa_flags = 0;
+    sigemptyset(&sig.sa_mask);  
 
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
 
-    if (sigaction(SIGINT, &sa, NULL) == -1)
+    if (sigaction(SIGINT, &sig, NULL) == -1)
     {
         perror("sigaction");
         return 1;
