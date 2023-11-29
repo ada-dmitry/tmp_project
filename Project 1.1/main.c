@@ -10,10 +10,26 @@ double a, b, eps, x, *pa = &a, *pb = &b, *px = &x;
 double f(double x);
 void ctrlc_handler(int signum);
 void choose_path();
+void fork_method();
 
 double f(double x) 
 {
-    return x*x - 256;
+    return x - 16;
+}
+
+void fork_method()
+{
+    do
+    {
+        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+        printf("%lf %lf\n", *pa, *pb);
+        if (f(*pa) * f(x) <= 0)
+            *pb = x;
+        else if(f(*pb) * f(x) <= 0)
+            *pa = x;
+        sleep(1);
+    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+    return;
 }
 
 void choose_path()
@@ -150,16 +166,18 @@ int main(){
         }
     }
 
-    do
-    {
-        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
-        printf("%lf %lf\n", *pa, *pb);
-        if (f(*pa) * f(x) <= 0)
-            *pb = x;
-        else if(f(*pb) * f(x) <= 0)
-            *pa = x;
-        sleep(1);
-    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+    fork_method();
+
+    // do
+    // {
+    //     *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+    //     printf("%lf %lf\n", *pa, *pb);
+    //     if (f(*pa) * f(x) <= 0)
+    //         *pb = x;
+    //     else if(f(*pb) * f(x) <= 0)
+    //         *pa = x;
+    //     sleep(1);
+    // } while(fabs(*pb - *pa) > eps && f(x) != 0);
 
     printf("\nКорень уравнения: %lf\n", *px);
     printf("Работа программы завершена.\n");
