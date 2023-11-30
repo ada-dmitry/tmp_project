@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <math.h>
-#include <termios.h>
 
 #include "declare.h"
 

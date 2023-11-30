@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 #include <math.h>
 #include <termios.h>
@@ -41,10 +40,10 @@ void choose_path()
     tcgetattr(0, &term);
 
     // Отключение символа ECHO
-    // term.c_lflag &= ~ECHO;
+    term.c_lflag &= ~ECHO;
 
     // Применение новых настроек терминала
-    // tcsetattr(0, TCSANOW, &term);
+    tcsetattr(0, TCSANOW, &term);
 
     printf("\nПродолжить поиск корня?\n");
     __fpurge(stdin);

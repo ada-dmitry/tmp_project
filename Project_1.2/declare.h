@@ -1,5 +1,3 @@
-
-
 extern double a, b, eps, x, *pa, *pb, *px;
 
 double f(double x);
