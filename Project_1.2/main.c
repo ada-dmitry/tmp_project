@@ -9,16 +9,18 @@
 
 double a, b, eps, x, *pa, *pb, *px;
 
-
-int main(){ 
+int main()
+{
 
     double tmp;
-    pa = &a; pb = &b; px = &x;
-    
+    pa = &a;
+    pb = &b;
+    px = &x;
+
     struct sigaction sig;
     sig.sa_handler = ctrlc_handler;
     sig.sa_flags = 0;
-    sigemptyset(&sig.sa_mask);  
+    sigemptyset(&sig.sa_mask);
 
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
@@ -27,8 +29,8 @@ int main(){
     {
         perror("sigaction");
         return 1;
-    }   
-    
+    }
+
     if (*pa > *pb) // Если пользователь перепутал границы
     {
         printf("Границы указаны неверно, запуск задачи с исправленным условием\n");

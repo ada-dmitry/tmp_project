@@ -6,12 +6,9 @@
 #include <termios.h>
 #include <stdio_ext.h>
 
-
 #include "declare.h"
 
-
-
-double f(double x) 
+double f(double x)
 {
     return x - 16;
 }
@@ -25,12 +22,12 @@ void fork_method()
         printf("%lf %lf\n", *pa, *pb);
         if (f(*pa) * f(x) <= 0)
             *pb = x;
-        else if(f(*pb) * f(x) <= 0)
+        else if (f(*pb) * f(x) <= 0)
             *pa = x;
-            
+
         sleep(1);
 
-    } while(fabs(*pb - *pa) > eps && f(x) != 0);
+    } while (fabs(*pb - *pa) > eps && f(x) != 0);
     return;
 }
 
@@ -39,15 +36,15 @@ void choose_path()
     char choice, *ch = &choice;
 
     struct termios term;
-    
+
     // Получение текущих настроек терминала
     tcgetattr(0, &term);
-    
+
     // Отключение символа ECHO
-    //term.c_lflag &= ~ECHO;
-    
+    // term.c_lflag &= ~ECHO;
+
     // Применение новых настроек терминала
-    //tcsetattr(0, TCSANOW, &term);
+    // tcsetattr(0, TCSANOW, &term);
 
     printf("\nПродолжить поиск корня?\n");
     __fpurge(stdin);
@@ -69,7 +66,7 @@ void choose_path()
         case 'r':
             // Включение символа ECHO
             term.c_lflag |= ECHO;
-    
+
             // Применение новых настроек терминала
             tcsetattr(0, TCSANOW, &term);
 
@@ -99,13 +96,12 @@ void choose_path()
 
         default:
             printf("Ошибка ввода, повторная попытка...");
-            
         }
-    } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c'); 
+    } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c');
 
     // Включение символа ECHO
     term.c_lflag |= ECHO;
-    
+
     // Применение новых настроек терминала
     tcsetattr(0, TCSANOW, &term);
 }
