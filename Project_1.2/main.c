@@ -10,7 +10,7 @@
 double a, b, eps, x, *pa, *pb, *px;
 
 
-int main(){
+int main(){ 
 
     double tmp;
     pa = &a; pb = &b; px = &x;
