@@ -6,11 +6,14 @@
 #include "declare.h"
 
 double a, b, eps, x, *pa, *pb, *px;
+short method, *mth;
 
 int main()
 {
 
     double tmp;
+    method = 0;
+    mth = &method;
     pa = &a;
     pb = &b;
     px = &x;
@@ -29,6 +32,9 @@ int main()
 
     printf("Введите интервал [a, b] и точность eps: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
+    printf("Выберите метод вычисления корня:\
+ 0 - метод вилки, 1 - метод хорд, 2 - метод касательных\n(По умолчанию: 0)\n");
+    scanf("%hd", &method);
 
     if (*pa > *pb) // Если пользователь перепутал границы
     {
@@ -63,7 +69,21 @@ int main()
         }
     }
 
-    fork_method();
+    if (*mth == 0)
+    {
+        printf("Fork\n");
+        fork_method();
+    }
+    else if (*mth == 1)
+    {
+        printf("Chord\n");
+        chord_method();
+    }
+    else if (*mth == 2)
+    {
+        printf("Newton\n");
+        newton_method();
+    }
 
     printf("\nКорень уравнения: %lf\n", *px);
     printf("Работа программы завершена.\n");
