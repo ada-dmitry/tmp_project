@@ -20,34 +20,38 @@ double numerical_derivative(double x)
 
 void newton_method()
 {
-    *pb = *pa;
+    sig_flag = 0;
+    double left = *pa, right = *pb;
+    right = left;
     do
     {
-        printf("%lf %lf\n", *pa, *pb);
-        *pa = *pb;
-        *pb = *pa - f(*pa) / numerical_derivative(*pa);
+        printf("%lf %lf\n", left, right);
+        left = right;
+        right = left - f(left) / numerical_derivative(left);
         // Используем численно вычисленную производную
-        *px = *pb;
+        *px = right;
         sleep(1);
-    } while (fabs(*pb - *pa) > eps && f(x) != 0);
+    } while (fabs(right - left) > eps && f(x) != 0);
     return;
 }
 
 void chord_method()
 {
-    *px = *pa;
-    while ((*pb - *pa) > eps && f(x) != 0)
+    sig_flag = 0;
+    double left = *pa, right = *pb;
+    *px = left;
+    while ((right - left) > eps && f(x) != 0)
     {
         // Находим точку пересечения хорды с осью x
-        *px = (*pa * f(*pb) - *pb * f(*pa)) / (f(*pb) - f(*pa));
-        printf("%lf %lf\n", *pa, *pb);
+        *px = (left * f(right) - right * f(left)) / (f(right) - f(left));
+        printf("%lf %lf\n", left, right);
         // Проверяем знаки функции в точках a и x
         if (f(*px) == 0)
             break;
-        else if (f(*px) * f(*pa) < 0)
-            *pb = *px;
+        else if (f(*px) * f(left) < 0)
+            right = *px;
         else
-            *pa = *px;
+            left = *px;
         sleep(1);
     }
     return;
@@ -55,23 +59,25 @@ void chord_method()
 
 void fork_method() // Функция поиска корней, использующая метод вилки.
 {
+    sig_flag = 0;
+    double left = *pa, right = *pb;
     do
     {
-        *px = (*pa + *pb) / 2; // метод деления отрезка пополам
+        *px = (left + right) / 2; // метод деления отрезка пополам
 
         // Печать границ для отладки и для отслеживания хода вычислений
-        printf("%lf %lf\n", *pa, *pb);
+        printf("%lf %lf\n", left, right);
 
         // Проверка, какой из отрезков [a, x] или [x, b] подходит под условие существования корня,
         // т.е. различие знаков на границе.
-        if (f(*pa) * f(x) <= 0)
-            *pb = x;
-        else if (f(*pb) * f(x) <= 0)
-            *pa = x;
+        if (f(left) * f(x) <= 0)
+            right = x;
+        else if (f(right) * f(x) <= 0)
+            left = x;
 
         sleep(1); // Принудительное ожидание программой, для возможности прерывания пользователем.
 
-    } while (fabs(*pb - *pa) > eps && f(x) != 0);
+    } while (fabs(right - left) > eps && f(x) != 0);
     return;
 }
 
@@ -81,20 +87,16 @@ void choose_path() // Функция выбора действия после в
 
     char choice, *ch = &choice;
 
-    struct termios term; // Задание структуры, определяющей терминал Linux.
+    struct termios original_term, modified_term; // Задание структуры, определяющей терминал Linux.
 
-    // Получение текущих настроек терминала
-    tcgetattr(0, &term);
-
-    // Отключение символа ECHO
-    term.c_lflag &= ~ECHO;
-
-    // Применение новых настроек терминала
-    tcsetattr(0, TCSANOW, &term);
+    tcgetattr(STDIN_FILENO, &original_term);
+    modified_term = original_term;
+    modified_term.c_lflag &= ~(ICANON | ECHO); // отключить канонического режим и отображение ввода
+    tcsetattr(STDIN_FILENO, TCSANOW, &modified_term);
 
     printf("\nПродолжить поиск корня?\n");
     printf("\nC - продолжить, A - закончить работу программы, \
-R - начать поиск на другом отрезке, M - выбрать другой способ решения: \n");
+R - начать поиск на другом отрезке: \n");
 
     do
     {
@@ -106,80 +108,7 @@ R - начать поиск на другом отрезке, M - выбрать
         {
         case 'C': // Выбор вида "Продолжить вычисление".
         case 'c':
-            return; // Выход из функции без каких-либо изменений.
-
-        case 'A': // Выбор вида "Завершить вычисление".
-        case 'a':
-            printf("\nКорень уравнения: %lf\n", *px);
-            printf("Работа программы завершена.\n");
-            exit(0); // Принудительное завершение программы с выводом текущего приближения корня.
-
-        case 'R': // Выбор вида "Продолжить вычисления с новым отрезком".
-        case 'r':
-
-            // Включение символа ECHO
-            term.c_lflag |= ECHO;
-
-            // Применение новых настроек терминала
-            tcsetattr(0, TCSANOW, &term);
-
-            printf("Введите новые значения границ a и b: ");
-
-            scanf("%lf%lf", pa, pb);
-
-            if (f(*pa) * f(*pb) > 0)
-            {
-                printf("В указанных границах нуля функции не существует.\n");
-                printf("Нажмите Ctrl+C и поменяйте границы\n");
-            }
-            if (*pa == *pb)
-            {
-                if (f(*pa) == 0)
-                {
-                    printf("\nКорень уравнения: %lf\n", *pa);
-                    printf("Работа программы завершена.\n");
-                    exit(0);
-                }
-                else
-                {
-                    printf("Нажмите Ctrl+C и поменяйте границы\n");
-                }
-            }
-            return;
-        case 'M':
-        case 'm':
-            __fpurge(stdin);
-            // Включение символа ECHO
-            term.c_lflag |= ECHO;
-
-            // Применение новых настроек терминала
-            tcsetattr(0, TCSANOW, &term);
-            printf("Выберите метод вычисления корня:\
- 0 - метод вилки, 1 - метод хорд, 2 - метод касательных\n(По умолчанию: 0)\n");
-            *mth = getchar();
-
-            printf("Введите новые значения границ a и b: ");
-
-            scanf("%lf%lf", pa, pb);
-
-            if (f(*pa) * f(*pb) > 0)
-            {
-                printf("В указанных границах нуля функции не существует.\n");
-                printf("Нажмите Ctrl+C и поменяйте границы\n");
-            }
-            if (*pa == *pb)
-            {
-                if (f(*pa) == 0)
-                {
-                    printf("\nКорень уравнения: %lf\n", *pa);
-                    printf("Работа программы завершена.\n");
-                    exit(0);
-                }
-                else
-                {
-                    printf("Нажмите Ctrl+C и поменяйте границы\n");
-                }
-            }
+            tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
             if (*mth == 0)
             {
                 printf("Fork\n");
@@ -200,19 +129,50 @@ R - начать поиск на другом отрезке, M - выбрать
                 printf("Fork\n");
                 fork_method();
             }
+            return; // Выход из функции без каких-либо изменений.
+
+        case 'A': // Выбор вида "Завершить вычисление".
+        case 'a':
+            printf("\nКорень уравнения: %lf\n", *px);
+            printf("Работа программы завершена.\n");
+            exit(0); // Принудительное завершение программы с выводом текущего приближения корня.
+
+        case 'R': // Выбор вида "Продолжить вычисления с новым отрезком".
+        case 'r':
+
+            tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+
+            printf("Введите новые значения границ a и b: ");
+
+            scanf("%lf%lf", pa, pb);
+
+            if (f(*pa) * f(*pb) > 0)
+            {
+                printf("В указанных границах нуля функции не существует.\n");
+                printf("Нажмите Ctrl+C и поменяйте границы\n");
+            }
+            if (*pa == *pb)
+            {
+                if (f(*pa) == 0)
+                {
+                    printf("\nКорень уравнения: %lf\n", *pa);
+                    printf("Работа программы завершена.\n");
+                    exit(0);
+                }
+                else
+                {
+                    printf("Нажмите Ctrl+C и поменяйте границы\n");
+                }
+            }
             return;
 
         default:
             printf("Ошибка ввода, повторная попытка...\n");
             __fpurge(stdin);
         }
-    } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c' || *ch != 'M' || *ch != 'm');
+    } while (*ch != 'A' || *ch != 'R' || *ch != 'C' || *ch != 'a' || *ch != 'r' || *ch != 'c');
 
-    // Включение символа ECHO
-    term.c_lflag |= ECHO;
-
-    // Применение новых настроек терминала
-    tcsetattr(0, TCSANOW, &term);
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 
     sig_flag = 0;
 }

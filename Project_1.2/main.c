@@ -9,7 +9,6 @@ double a, b, eps, x, *pa, *pb, *px;
 
 int main()
 {
-
     double tmp;
     pa = &a;
     pb = &b;
