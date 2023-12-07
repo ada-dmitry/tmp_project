@@ -6,7 +6,7 @@ CFLAGS= -c -Wall
 default: build
 
 general: main.o functions.o 
-
+	killall -9 function_zeros_calculator
 	$(CC) ./out/main.o ./out/functions.o -o ./out/function_zeros_calculator -lm
 
 main.o: main.c
