@@ -11,7 +11,6 @@ short method, *mth, sig_flag;
 
 int main()
 {
-
     double tmp;
     sig_flag = 0;
     method = 0;
@@ -32,7 +31,9 @@ int main()
         return 1;
     }
 
-    printf("Введите интервал [a, b] и точность eps: ");
+    show_grapgh();
+
+    printf("Введите интервал [a, b] и точность eps и нажмите Enter: ");
     scanf("%lf %lf %lf", pa, pb, &eps);
 
     __fpurge(stdin);
@@ -65,7 +66,7 @@ int main()
         {
             printf("\nКорень уравнения: %lf\n", *pa);
             printf("Работа программы завершена.\n");
-            exit(0);
+            exit_777();
         }
         else
         {

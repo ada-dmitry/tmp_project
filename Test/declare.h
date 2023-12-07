@@ -13,3 +13,4 @@ void chord_method();
 void newton_method();
 double numerical_derivative(double x);
 void exit_777();
+void show_grapgh();
