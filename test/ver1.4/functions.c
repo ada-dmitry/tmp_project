@@ -10,7 +10,7 @@
 
 double f(double x) // Функция, заданная пользователем, для которой происходит поиск корней.
 {
-    return x - 125;
+    return x - x * x + 1349;
 }
 
 void show_grapgh()
@@ -22,7 +22,7 @@ void show_grapgh()
     new_term.c_lflag &= ~(ECHO | ICANON);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
 
-    char func[100] = "x - 125";
+    char func[100] = "x - x * x + 1349";
 
     // Подключение GNU Plot
     FILE *gp = popen("gnuplot -persist", "w");

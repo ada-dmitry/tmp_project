@@ -4,8 +4,8 @@ extern short method, *mth, sig_flag;
 // Декларирование глобальных переменных,
 // как внешних для последующего использования их во всей программе.
 #define H 0.000001
-#define A -10000
-#define B 10000
+#define A 0
+#define B 100000000
 #define EPS 0.001
 
 double f(double x);
