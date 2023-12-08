@@ -18,13 +18,13 @@ int main()
     pb = &b;
     px = &x;
 
-    struct sigaction sig; // Инициализация структуры, отвечающей за обработку сигнала.
+    struct sigaction sig_int; // Инициализация структуры, отвечающей за обработку сигнала.
     // Замена стандартного алгоритма на необходимый для вызова меню действий.
-    sig.sa_handler = ctrlc_handler;
-    sig.sa_flags = 0;          // Очистка флагов "на всякий случай".
-    sigemptyset(&sig.sa_mask); // Очистка маски "на всякий случай".
+    sig_int.sa_handler = ctrlc_handler;
+    sig_int.sa_flags = 0;          // Очистка флагов "на всякий случай".
+    sigemptyset(&sig_int.sa_mask); // Очистка маски "на всякий случай".
 
-    if (sigaction(SIGINT, &sig, NULL) == -1) // Обработчик ошибок и инициализация сигнала SIGINT.
+    if (sigaction(SIGINT, &sig_int, NULL) == -1) // Обработчик ошибок и инициализация сигнала SIGINT.
     {
         perror("sigaction");
         return 1;
