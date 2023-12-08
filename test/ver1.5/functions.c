@@ -34,7 +34,7 @@ void show_grapgh()
     }
     fprintf(gp, "set xrange [-500:500]\n");
     fprintf(gp, "set yrange [0:500]\n");
-    fprintf(gp, "plot %s\n", func);
+    fprintf(gp, "plot %s, 0\n", func);
     fflush(gp); // очищение буфера вывода
     sig_flag = 1;
     printf("Нажмите любую клавишу, чтобы продолжить...\n");
