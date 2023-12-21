@@ -22,25 +22,37 @@ void show_grapgh()
     new_term.c_lflag &= ~(ECHO | ICANON);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
 
-    char func[100] = "x - x * x + 1349";
+    // char *gnuplotCommand = "gnuplot -persist -e \"plot sin(x)\" pause -1";
+    // system(gnuplotCommand);
 
     // Подключение GNU Plot
-    FILE *gp = popen("gnuplot -persist", "w");
+    // FILE *gp = system("gnuplot -persist");
 
-    if (gp == NULL)
-    {
-        printf("GNUerror\n");
-        exit(3);
-    }
-    fprintf(gp, "set xrange [-500:500]\n");
-    fprintf(gp, "set yrange [0:500]\n");
-    fprintf(gp, "plot %s, 0\n", func);
-    fflush(gp); // очищение буфера вывода
+    // if (gp == NULL)
+    // {
+    //     printf("GNUerror\n");
+    //     exit(3);
+    // }
+    // fprintf(gp, "set xrange [-500:500]\n");
+    // fprintf(gp, "set yrange [0:500]\n");
+    // fprintf(gp, "plot %s, 0\n", func);
+    // fflush(gp); // очищение буфера вывода
+
+    printf("set terminal wxt enhanced\n");
+    printf("plot sin(x)\n");
+    printf("pause mouse keypress\n");
+
+    // system("echo 'set term x11' | gnuplot -persist");
+    // system("set xrange [-500:500]\n set yrange [0:500]\n echo 'plot x - x * x + 1349'\n gnuplot -persist");
+    // system("exit\n");
+    // system("set yrange [0:500]\n | gnuplot -persist");
+    // system("echo 'plot x - x * x + 1349' | gnuplot -persist");
+
     sig_flag = 1;
     printf("Нажмите любую клавишу, чтобы продолжить...\n");
     getchar();
     sig_flag = 0;
-    fprintf(gp, "exit\n");
+    // fprintf(gp, "exit\n");
     tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
     return;
 }

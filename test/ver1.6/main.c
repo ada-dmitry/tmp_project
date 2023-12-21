@@ -3,24 +3,29 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdio_ext.h>
+#include <termios.h>
 
 #include "declare.h"
 
 double a, b, eps, x, *pa, *pb, *px;
 short method, *mth, sig_flag;
+struct termios default_term, modif_term; // Задание структур, определяющих терминал Linux.
 
 int main()
 {
+    tcgetattr(0, &default_term); // Получение текущих настроек терминала
+    modif_term = default_term;
+    modif_term.c_lflag &= ~(ECHO | ICANON); // Отключение символа ECHO и канонического ввода
+
     sig_flag = 0;
     method = 0;
     mth = &method;
+    a = A;
+    b = B;
+    eps = EPS;
     pa = &a;
     pb = &b;
     px = &x;
-
-    printf("set terminal wxt enhanced\n");
-    printf("plot sin(x)\n");
-    printf("pause mouse keypress\n");
 
     struct sigaction sig_int, sig_tstp; // Инициализация структуры, отвечающей за обработку сигнала.
     // Замена стандартного алгоритма на необходимый для вызова меню действий.
@@ -42,9 +47,10 @@ int main()
         return 1;
     }
 
-    // show_grapgh();
+    show_grapgh();
     input_diap();
 
+    system("clear");
     if (*mth == 0)
     {
         printf("Fork\n");
