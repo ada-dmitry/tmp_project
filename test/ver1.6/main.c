@@ -53,22 +53,22 @@ int main()
     system("clear");
     if (*mth == 0)
     {
-        printf("Fork\n");
+        printf("\nFork\n");
         fork_method();
     }
     else if (*mth == 1)
     {
-        printf("Chord\n");
+        printf("\nChord\n");
         chord_method();
     }
     else if (*mth == 2)
     {
-        printf("Newton\n");
+        printf("\nNewton\n");
         newton_method();
     }
     else
     {
-        printf("Fork\n");
+        printf("\nFork\n");
         fork_method();
     }
 

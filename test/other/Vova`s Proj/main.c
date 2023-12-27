@@ -13,12 +13,13 @@ int linesWritten = 0;
 
 void signalHandler(int signal)
 {
-    printf("Number of lines written: %d\n", linesWritten);
+    printf("\b\bNumber of lines written: %d\n", linesWritten);
+    fflush(stdout);
 }
 
 void writeFile(const char *fileName, int numLines, const char *placeholder)
 {
-    int fd = open(fileName, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+    int fd = open(fileName, O_CREAT | O_WRONLY, 0666);
 
     if (fd == -1)
     {
@@ -32,9 +33,13 @@ void writeFile(const char *fileName, int numLines, const char *placeholder)
         exit(EXIT_FAILURE);
     }
 
-    signal(SIGINT, signalHandler);
+    if (ftruncate(fd, 0) == -1)
+    {
+        printf("Failed to truncate the file\n");
+        exit(EXIT_FAILURE);
+    }
 
-    // lseek(fd, 0, SEEK_END);
+    signal(SIGINT, signalHandler);
 
     for (int i = 0; i < numLines; i++)
     {
@@ -75,18 +80,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *placeholder = argv[3];
-    while (*placeholder)
-    {
-        if (!isalnum(*placeholder) && !isspace(*placeholder))
-        {
-            printf("The placeholder must consist of letters and numbers\n");
-            exit(EXIT_FAILURE);
-        }
-        placeholder++;
-    }
+    const char *placeholder = argv[3];
 
-    writeFile(fileName, numLines, argv[3]);
+    writeFile(fileName, numLines, placeholder);
 
     return 0;
 }

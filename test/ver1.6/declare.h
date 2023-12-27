@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 extern double a, b, eps, x, *pa, *pb, *px;
 extern short method, *mth, sig_flag;
 extern struct termios default_term, modif_term;
@@ -21,3 +23,9 @@ void __exit();
 void show_grapgh();
 void input_diap();
 void change_diap();
+// double input_number(char ch);
+bool is_digit(char c);
+bool is_sign(char c);
+bool is_dot(char c);
+double read_parse(char ch);
+bool is_enter(char c);

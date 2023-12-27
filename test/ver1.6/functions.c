@@ -4,6 +4,8 @@
 #include <math.h>
 #include <termios.h>
 #include <stdio_ext.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 #include "declare.h"
 
@@ -15,7 +17,6 @@ double f(double x) // Функция, заданная пользователе�
 void show_grapgh()
 {
     char func[100] = "x+20";
-    tcsetattr(0, TCSANOW, &modif_term);
     // Подключение GNU Plot
     FILE *gp = popen("gnuplot -persist", "w");
 
@@ -34,7 +35,6 @@ void show_grapgh()
     getchar();
     sig_flag = 0;
     fprintf(gp, "exit\n");
-    tcsetattr(0, TCSANOW, &default_term);
     return;
 }
 
@@ -176,53 +176,29 @@ void __exit()
 void input_diap()
 {
     double tmp;
-    char input[50];
     sig_flag = 1;
 
     system("clear");
-    printf("\n\nТекущие значения: [%lf : %lf] eps = %lf\n\n\
-Введите левую границу отрезка и нажмите Enter (по умолчанию: %lf): ",
+    printf("\n\nТекущие значения: [%g] : %g | eps = %g\n\n\
+Введите левую границу отрезка и нажмите Enter (по умолчанию: %g): ",
            *pa, *pb, eps, *pa);
-    fgets(input, sizeof(input), stdin);
 
-    if (input[0] == '\n')
-    {
-        *pa = A; // значение по умолчанию
-    }
-    else
-    {
-        sscanf(input, "%lf", pa);
-    }
+    *pa = read_parse('A');
 
     system("clear");
-    printf("\n\nТекущие значения: [%lf : %lf] eps = %lf\n\n\
-Введите правую границу отрезка и нажмите Enter (по умолчанию: %lf): ",
+    printf("\nТекущие значения: %g : [%g] | eps = %g\n\n\
+Введите правую границу отрезка и нажмите Enter (по умолчанию: %g): ",
            *pa, *pb, eps, *pb);
-    fgets(input, sizeof(input), stdin);
 
-    if (input[0] == '\n')
-    {
-        *pb = B; // значение по умолчанию
-    }
-    else
-    {
-        sscanf(input, "%lf", pb);
-    }
+    *pb = read_parse('B');
 
     system("clear");
-    printf("\n\nТекущие значения: [%lf : %lf] eps = %lf\n\n\
-Введите точность вычисления и нажмите Enter (по умолчанию: %lf): ",
+    printf("\nТекущие значения: %g : %g | eps = [%g]\n\n\
+Введите точность вычисления и нажмите Enter (по умолчанию: %g): ",
            *pa, *pb, eps, eps);
-    fgets(input, sizeof(input), stdin);
 
-    if (input[0] == '\n')
-    {
-        eps = EPS; // значение по умолчанию
-    }
-    else
-    {
-        sscanf(input, "%lf", &eps);
-    }
+    eps = read_parse('E');
+
     system("clear");
     __fpurge(stdin);
     printf("\nВыберите метод вычисления корня и нажмите Enter:\
@@ -242,7 +218,6 @@ void input_diap()
         sig_flag = 0;
         printf("В указанных границах нуля функции не существует.\n");
         printf("Поменяйте границы\n");
-        // choose_path();
         change_diap();
     }
     if (eps < 0) // Если пользователь указал отрицательную точность
@@ -273,16 +248,18 @@ void change_diap()
     // Возврат к обычному выводу
     tcsetattr(0, TCSANOW, &default_term);
 
-    printf("Введите новые значения границ a и b: ");
+    system("clear");
 
-    scanf("%lf%lf", pa, pb);
+    printf("Введите новое значение левой границы: ");
+    *pa = read_parse('A');
+    printf("Введите новое значение правой границы: ");
+    *pb = read_parse('B');
 
     if (f(*pa) * f(*pb) > 0)
     {
         printf("\nВ указанных границах нуля функции не существует.\n");
         printf("Поменяйте границы\n");
         choose_path();
-        // change_diap();
     }
     if (*pa == *pb)
     {
@@ -300,4 +277,88 @@ void change_diap()
 
     sig_flag = 0;
     return;
+}
+
+bool is_digit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+bool is_sign(char c)
+{
+    return (c == '+' || c == '-');
+}
+
+bool is_dot(char c)
+{
+    return (c == '.');
+}
+
+bool is_enter(char c)
+{
+    return (c == '\n');
+}
+
+double read_parse(char ch)
+{
+    char input[50];
+    double number;
+
+    __fpurge(stdin);
+
+    fgets(input, sizeof(input), stdin);
+
+    __fpurge(stdin);
+    int i = 0;
+    bool is_valid = true;
+    bool has_dot = false;
+    // Проверка первого символа, который может быть знаком или переносом строки
+    if (is_sign(input[0]))
+    {
+        i++;
+    }
+    else if (is_enter(input[0]))
+    {
+        switch (ch)
+        {
+        case 'A':
+            return A;
+        case 'B':
+            return B;
+        case 'E':
+            return EPS;
+        }
+    }
+    // Проверка символов, формирующих цифры числа
+    while (input[i] != '\0')
+    {
+        if (is_digit(input[i]))
+        {
+            i++;
+            continue;
+        }
+        else if (is_dot(input[i]) && !has_dot)
+        {
+            has_dot = true;
+            i++;
+            continue;
+        }
+        else
+        {
+            is_valid = false;
+            break;
+        }
+    }
+
+    if (is_valid)
+    {
+        number = atof(input);
+        return number;
+    }
+    else
+    {
+        printf("Ошибка: некорректный ввод\nЗавершение выполнения программы...\n");
+        __exit();
+    }
+    return 1;
 }
