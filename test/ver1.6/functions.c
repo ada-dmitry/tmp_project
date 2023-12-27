@@ -117,7 +117,7 @@ R - начать поиск на другом отрезке: \n");
         // Очистка стандартного потока ввода от "лишних"
         __fpurge(stdin);
         choice = getchar();
-        // scanf("%c", &choice); // Запись буквы, введенной пользователем в переменную choice.
+
         switch (choice)
         {
         case 'C': // Выбор вида "Продолжить вычисление".
@@ -303,12 +303,9 @@ double read_parse(char ch)
 {
     char input[50];
     double number;
-
-    __fpurge(stdin);
-
     fgets(input, sizeof(input), stdin);
-
     __fpurge(stdin);
+
     int i = 0;
     bool is_valid = true;
     bool has_dot = false;
@@ -330,7 +327,7 @@ double read_parse(char ch)
         }
     }
     // Проверка символов, формирующих цифры числа
-    while (input[i] != '\0')
+    while (input[i] != '\n')
     {
         if (is_digit(input[i]))
         {
