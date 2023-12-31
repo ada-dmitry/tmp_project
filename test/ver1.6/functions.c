@@ -6,17 +6,18 @@
 #include <stdio_ext.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #include "declare.h"
 
 double f(double x) // Функция, заданная пользователем, для которой происходит поиск корней.
 {
-    return x + 20;
+    return x - 20;
 }
 
 void show_grapgh()
 {
-    char func[100] = "x+20";
+    char func[100] = "x-20";
     // Подключение GNU Plot
     FILE *gp = popen("gnuplot -persist", "w");
 
@@ -163,14 +164,15 @@ void ctrlc_handler(int signum) // Функция, заменяющая стан�
 
 void ctrlz_handler(int signum)
 {
-    printf("Аварийное завершение программы, возврат к настройкам по умолчанию...");
-    __exit();
+    kill(getpid(), SIGTSTP); // Отправляем сигнал SIGTSTP процессу
+    tcsetattr(STDIN_FILENO, TCSANOW, &default_term);
+    return;
 }
 
 void __exit()
 {
     tcsetattr(0, TCSANOW, &default_term); // Применение новых настроек терминала
-    exit(1);
+    exit(EXIT_SUCCESS);
 }
 
 void input_diap()

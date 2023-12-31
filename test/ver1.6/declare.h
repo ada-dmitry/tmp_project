@@ -3,7 +3,6 @@
 extern double a, b, eps, x, *pa, *pb, *px;
 extern short method, *mth, sig_flag;
 extern struct termios default_term, modif_term;
-
 // Декларирование глобальных переменных,
 // как внешних для последующего использования их во всей программе.
 #define H 0.000001
