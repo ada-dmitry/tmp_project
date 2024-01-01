@@ -143,7 +143,7 @@ R - начать поиск на другом отрезке: \n");
             printf("Ошибка ввода, повторная попытка...\n");
             __fpurge(stdin);
         }
-    } while (choice != 'A' || choice != 'R' || choice != 'C' || choice != 'a' || choice != 'r' || choice != 'c' || choice != 'M' || choice != 'm');
+    } while (choice != 'A' || choice != 'R' || choice != 'C' || choice != 'a' || choice != 'r' || choice != 'c');
 
     // Применение новых настроек терминала
     tcsetattr(0, TCSANOW, &default_term);
